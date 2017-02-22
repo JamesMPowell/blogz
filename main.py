@@ -20,7 +20,8 @@ class BlogHandler(webapp2.RequestHandler):
             The user parameter will be a User object.
         """
         # TODO - filter the query so that only posts by the given user
-        return None
+        query = Post.all().order('-created').filter('author=',user)
+        return q.fetch(limit=limit, offset=offset)
 
     def get_user_by_name(self, username):
         """ Get a user object from the db, based on their username """
@@ -73,9 +74,9 @@ class BlogIndexHandler(BlogHandler):
     # number of blog posts per page to display
     page_size = 5
 
-    def get(self, username=""):
+    def get(self, username):
         """ """
-
+        username = self.request.get("username")
         # If request is for a specific page, set page number and offset accordingly
         page = self.request.get("page")
         offset = 0
@@ -136,7 +137,7 @@ class NewPostHandler(BlogHandler):
             post = Post(
                 title=title,
                 body=body,
-                author=self.user)
+                author=str(self.user.username))
             post.put()
 
             # get the id of the new post, so we can render the post's page (via the permalink)
