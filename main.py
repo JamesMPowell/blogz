@@ -20,8 +20,8 @@ class BlogHandler(webapp2.RequestHandler):
             The user parameter will be a User object.
         """
         # TODO - filter the query so that only posts by the given user
-        query = Post.all().order('-created').filter('author=',user)
-        return q.fetch(limit=limit, offset=offset)
+        query = Post.all().order('-created').filter('author',user.username)
+        return query.fetch(limit=limit, offset=offset)
 
     def get_user_by_name(self, username):
         """ Get a user object from the db, based on their username """
@@ -74,9 +74,9 @@ class BlogIndexHandler(BlogHandler):
     # number of blog posts per page to display
     page_size = 5
 
-    def get(self, username):
+    def get(self, username=""):
         """ """
-        username = self.request.get("username")
+
         # If request is for a specific page, set page number and offset accordingly
         page = self.request.get("page")
         offset = 0
@@ -202,7 +202,6 @@ class SignupHandler(BlogHandler):
         """
             Validate submitted data, creating a new user if all fields are valid.
             If data doesn't validate, render the form again with an error.
-
             This code is essentially identical to the solution to the Signup portion
             of the Formation assignment. The main modification is that we are now
             able to create a new user object and store it when we have valid data.
